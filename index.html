@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview GPS Tambang | Command Center</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="mission-control">
+    <!-- Immersive Background Animation Overlay -->
+    <div class="background-grid"></div>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar: System Health & Hardware -->
+        <aside class="sidebar-left glass-panel">
+            <div class="panel-header">
+                <div class="brand">
+                    <span class="brand-line"></span>
+                    <span class="brand-text">FLEET SYSTEMS</span>
+                </div>
+            </div>
+
+            <div class="fleet-selector glass-inner">
+                <div class="fleet-list" id="fleet-unit-list">
+                    <!-- Units will be populated here -->
+                    <div class="empty-fleet-hint">LOAD DATA SHIPS TO BEGIN...</div>
+                </div>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <div class="panel-header">
+                <div class="brand">
+                    <span class="brand-line"></span>
+                    <span class="brand-text">TELEMETRY HUD</span>
+                </div>
+            </div>
+            
+            <div class="hardware-grid">
+                <div class="hw-card" id="hw-satellites">
+                    <span class="hw-label">GNSS SATS</span>
+                    <div class="hw-main">
+                        <span class="hw-value" id="val-sats">0</span>
+                        <div class="signal-bars">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hw-card" id="hw-operator">
+                    <span class="hw-label">OPERATOR</span>
+                    <div class="hw-main">
+                        <span class="hw-value small" id="val-operator">NONE</span>
+                    </div>
+                    <div class="op-status-pill" id="ind-operator">OFFLINE</div>
+                </div>
+
+                <div class="hw-card" id="hw-mcu">
+                    <span class="hw-label">MCU TEMP</span>
+                    <div class="hw-main">
+                        <span class="hw-value" id="val-temp">0°C</span>
+                    </div>
+                    <div class="temp-gauge"><div class="gauge-fill" id="temp-fill"></div></div>
+                </div>
+
+                <div class="hw-card" id="hw-battery">
+                    <span class="hw-label">EXT VOLTAGE</span>
+                    <div class="hw-main">
+                        <span class="hw-value" id="val-ext">0.0V</span>
+                    </div>
+                </div>
+
+                <div class="hw-card" id="hw-odometer">
+                    <span class="hw-label">ODOMETER</span>
+                    <div class="hw-main">
+                        <span class="hw-value small" id="val-odo">0 km</span>
+                    </div>
+                </div>
+
+                <div class="hw-card" id="hw-dumping">
+                    <span class="hw-label">TOTAL DUMPING</span>
+                    <div class="hw-main">
+                        <span class="hw-value" id="val-dump-count">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <div class="gsensor-panel">
+                <span class="panel-subtitle">G-SENSOR FIELD</span>
+                <div class="horizon-container">
+                    <div class="artificial-horizon" id="horizon">
+                        <div class="horizon-ring"></div>
+                        <div class="horizon-point" id="gsensor-point"></div>
+                    </div>
+                    <div class="g-axis-labels">
+                        <span>X: <em id="val-gx">0</em></span>
+                        <span>Y: <em id="val-gy">0</em></span>
+                        <span>Z: <em id="val-gz">0</em></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-stage">
+            <header class="top-nav glass-panel">
+                <div class="nav-left">
+                    <div class="mission-id">EXCA01 <small>// MINING OPS</small></div>
+                    <div class="status-pill active">
+                        <div class="dot pulse"></div>
+                        <span>TELEMETRY ACTIVE</span>
+                    </div>
+                </div>
+                <div class="nav-right">
+                    <button class="toggle-btn" id="btn-lock" title="Auto-Follow Active Unit">
+                        <svg viewBox="0 0 24 24" id="lock-icon-on"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/></svg>
+                        <svg viewBox="0 0 24 24" id="lock-icon-off" style="display:none;"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 3H6v10h12V9z"/></svg>
+                        <span>LOCK MAP</span>
+                    </button>
+                    <button class="upload-btn" id="btn-upload">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.83V19h2v-4.17l1.59 1.59L16 15.01 12.01 11 8 15.01z"/></svg>
+                        <span>LOAD DATA</span>
+                    </button>
+                    <input type="file" id="file-input" accept=".jsonl" multiple style="display: none;">
+                    <div class="telemetry-timer" id="nav-time">00:00:00</div>
+                    <div class="telemetry-date" id="nav-date">-- --- ----</div>
+                </div>
+            </header>
+
+            <div class="map-viewport glass-panel">
+                <div id="map"></div>
+                
+                <!-- Floating HUD overlay on map -->
+                <div class="map-hud">
+                    <div class="hud-velocity">
+                        <div class="vel-ring">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" class="bg-ring"></circle>
+                                <circle cx="50" cy="50" r="45" class="val-ring" id="speed-ring"></circle>
+                            </svg>
+                            <div class="vel-content">
+                                <span class="vel-val" id="hud-speed">0</span>
+                                <span class="vel-unit">KM/H</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hud-indicators">
+                        <div class="ind-pill" id="ind-acc">
+                            <span class="icon">IGN</span>
+                            <span class="lbl">IGNITION</span>
+                        </div>
+                        <div class="ind-pill" id="ind-pto">
+                            <span class="icon">PTO</span>
+                            <span class="lbl">DUMPING</span>
+                        </div>
+                        <div class="ind-pill" id="ind-beacon">
+                            <span class="icon">BCN</span>
+                            <span class="lbl">BEACON</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="bottom-controls glass-panel">
+                <div class="timeline-area">
+                    <div class="play-trigger">
+                        <button id="btn-play" class="control-btn">
+                            <svg class="icon-play" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>
+                            <svg class="icon-pause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        </button>
+                    </div>
+                    <div class="scrubber-wrapper">
+                        <input type="range" id="timeline" min="0" max="100" value="0" class="mission-scrubber">
+                        <div class="scrubber-track"></div>
+                    </div>
+                </div>
+            </footer>
+        </main>
+
+        <!-- Right Sidebar: Log & Events -->
+        <aside class="sidebar-right glass-panel">
+            <div class="panel-header">
+                <span class="brand-text">TELEMETRY STREAM</span>
+            </div>
+            <div class="stream-container">
+                <canvas id="telemetryChart"></canvas>
+            </div>
+            <div class="event-log">
+                <div class="log-header">SESSION EVENTS</div>
+                <div class="log-entries" id="event-log-list">
+                    <!-- Events will be injected here -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Initialization Shield -->
+    <div id="loading" class="system-loader">
+        <div class="loader-content">
+            <div class="orb"></div>
+            <h1>CORE SYSTEM INITIALIZING</h1>
+            <div class="load-bar"><div class="load-fill"></div></div>
+            <p class="load-status">DECODING TELEMETRY STREAMS...</p>
+            <button class="manual-load-btn" id="btn-manual-load">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.83V19h2v-4.17l1.59 1.59L16 15.01 12.01 11 8 15.01z"/></svg>
+                SELECT FILES (.jsonl)
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
