@@ -405,7 +405,9 @@ function initMap() {
     
     map = L.map('map', { zoomControl: false, attributionControl: false }).setView(startPoint, 17);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EBP, and the GIS User Community'
+    }).addTo(map);
 
     // Render Markers and Paths for each unit
     Object.values(fleet).forEach(unit => {
