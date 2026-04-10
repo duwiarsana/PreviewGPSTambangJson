@@ -1,31 +1,33 @@
 # Preview GPS Tambang - Mission Control
 
-A high-performance, web-based fleet monitoring dashboard designed for mining operations. This system provides a "Mission Control" style interface for tracking multiple Dump Trucks (DT) and Excavators (EXCA) simultaneously with real-time telemetry visualization.
+Dashboard pemantauan armada berbasis web berkinerja tinggi yang dirancang khusus untuk operasional pertambangan. Sistem ini menyediakan antarmuka bergaya **"Mission Control"** untuk melacak pergerakan dan status teknis beberapa Dump Truck (DT) serta Ekskavator (EXCA) secara bersamaan dengan visualisasi telemetri yang presisi dan real-time.
 
-## 🚀 Key Features
+---
 
-- **Fleet Intelligence**:
-  - **Fleet Overview HUD**: Real-time stats on active units and cumulative dumping cycles across the entire fleet.
-  - **Interactive Event Logs (Time Travel)**: Click any event in the session log to automatically synchronize the dashboard and map focus.
-  - **UTC Temporal Alignment**: Forced UTC rendering for 100% time accuracy across all modules.
-- **Advanced Visualization**:
-  - **G-Sensor G-Ball**: High-precision "bubble level" style indicator for lateral (X) and longitudinal (Y) force visualization.
-  - **Sliding Telemetry Stream**: Dynamic data monitor with a sliding viewing window and dual-axis visualization (Speed + Altitude).
-  - **Dynamic Speedometer**: Gauges scaled to 40 km/h with high-visibility color transitions (Safe/Warn/Crit).
-- **Map Focus Control**:
-  - **Lock Map Mode**: Automatically follows the active vehicle.
-  - **Interactive Markers**: Color-coded markers with altitude labels and pulse effects for the active unit.
-- **Operational Analytics**: Automatic calculation of "Dumping Cycles" based on PTO status.
+## 🚀 Fitur Utama
 
-## 📸 Dashboard Preview
+- **Kecerdasan Armada (Fleet Intelligence)**:
+  - **Fleet Overview HUD**: Statistik real-time untuk jumlah unit aktif dan akumulasi siklus *dumping* di seluruh armada.
+  - **Interactive Event Logs (Time Travel)**: Klik pada log kejadian untuk menyinkronkan dashboard dan fokus peta secara otomatis ke waktu kejadian tersebut.
+  - **UTC Temporal Alignment**: Memaksa rendering waktu dalam format UTC untuk akurasi data 100% di semua modul.
+- **Visualisasi Lanjutan**:
+  - **G-Sensor G-Ball**: Indikator "bubble level" presisi tinggi untuk visualisasi gaya G lateral (X) dan longitudinal (Y).
+  - **Sliding Telemetry Stream**: Monitor data dinamis dengan jendela pantau yang bergerak mengikuti waktu misi, menampilkan **Kecepatan** dan **Ketinggian** sekaligus (Dual-Axis).
+  - **Speedometer Dinamis**: Indikator kecepatan hingga 40 km/jam dengan transisi warna high-visibility (Aman/Peringatan/Kritis).
+- **Kontrol Peta & Fokus**:
+  - **Mode Lock Map**: Mengikuti kendaraan aktif secara otomatis sehingga tetap berada di tengah layar.
+  - **Marker Interaktif**: Penanda peta berwarna dengan label Unit ID dan Ketinggian (Altitude) permanen.
+- **Analisis Operasional**: Perhitungan otomatis siklus "Dumping" berdasarkan status PTO kendaraan.
+
+## 📸 Tampilan Dashboard
 
 ![Fleet Mission Control Preview](preview.png)
 
-## 📊 Data Format (JSONL)
+## 📊 Format Data (JSONL)
 
-The system parses line-delimited JSON files. Each line represents a telemetry pulse from a unit.
+Sistem memproses file JSON per baris (JSONL). Setiap baris mewakili satu denyut telemetri dari sebuah unit.
 
-### Example Log Entry
+### Contoh Log
 ```json
 {
   "source": "DT01",
@@ -43,26 +45,13 @@ The system parses line-delimited JSON files. Each line represents a telemetry pu
 }
 ```
 
-### Field Breakdown
-| Field | Description |
-| :--- | :--- |
-| `source` | Unique identifier for the vehicle (e.g., DT01, EXCA01). |
-| `timestamp` | ISO 8601 formatted time of the record. |
-| `latitude` / `longitude` | GPS coordinates for map positioning. |
-| `altitude` | Vertical elevation in meters. |
-| `speed` | Current velocity in km/h. |
-| `ignition` | Engine status (1: ON, 0: OFF). |
-| `input_status` | Binary string (Bit 0: PTO/Dumping status). |
-| `ibutton` | Operator authentication and status (id, login/logout). |
-| `gsensor` | X, Y, Z raw accelerometer data for orientation. |
+## 🛠️ Cara Penggunaan
 
-## 🛠️ Installation & Usage
-
-1. **Open `index.html`** in any modern web browser.
-2. Click **"LOAD DATA"** or **"SELECT FILES"** in the top navigation.
-3. Select one or more `.jsonl` files from your local storage.
-4. Use the **Fleet Sidebar** on the left to switch focus between different vehicles.
-5. Use the **Play/Pause** and **Timeline** controls at the bottom to replay the mission.
+1.  **Buka `index.html`** di browser modern pilihan Anda.
+2.  Klik tombol **"LOAD DATA"** atau **"SELECT FILES"** di navigasi atas.
+3.  Pilih satu atau lebih file `.jsonl` dari penyimpanan lokal Anda.
+4.  Gunakan **Fleet Sidebar** di sebelah kiri untuk berpindah fokus antar kendaraan.
+5.  Gunakan kontrol **Play/Pause** dan slider **Timeline** di bagian bawah untuk memutar ulang perjalanan misi.
 
 ---
-*Built with Leaflet.js, Chart.js, and Vanilla Modern CSS/JS.*
+*Dibuat menggunakan Leaflet.js, Chart.js, dan Vanilla Modern CSS/JS.*
