@@ -4,18 +4,21 @@ A high-performance, web-based fleet monitoring dashboard designed for mining ope
 
 ## 🚀 Key Features
 
-- **Multi-Vehicle Fleet Synchronization**: Load multiple `.jsonl` log files and monitor the entire fleet on a single map.
-- **Temporal Alignment**: All vehicles are synchronized via timestamp. Scrape the global timeline to see exactly where each vehicle was at any given moment.
-- **Hardware Telemetry HUD**:
-  - **Dynamic Speedometer**: Re-scaled for precision (0-40 km/h) with color-coded safety zones (Cyan/Safe, Amber/Warning, Red/Danger).
-  - **Machine Health**: Monitor MCU Temperature, External Voltage, and Satellite count.
-  - **G-Sensor View**: 3-axis accelerometer visualization for terrain and driving analysis.
-- **Operator Tracking (iButton)**: Monitor which operator is logged into which vehicle, including real-time login/logout status and session audit logs.
+- **Fleet Intelligence**:
+  - **Fleet Overview HUD**: Real-time stats on active units and cumulative dumping cycles across the entire fleet.
+  - **Interactive Event Logs (Time Travel)**: Click any event in the session log to automatically synchronize the dashboard and map focus to that specific moment in time.
+- **Advanced Visualization**:
+  - **Artificial Horizon**: Dynamic attitude indicator visualizing vehicle tilt (pitch/roll) using G-sensor telemetry.
+  - **Marker Pulse Effect**: Visual feedback for the active vehicle on the map.
+  - **Dynamic Speedometer**: Gauges scaled to 40 km/h with high-visibility color transitions (Safe/Warn/Crit).
 - **Map Focus Control**:
   - **Lock Map Mode**: Automatically follows the active vehicle.
-  - **Free Pan Mode**: Manually inspect specific areas without losing sync.
   - **Vehicle Annotations**: Permanent on-map labels showing Unit ID and current Altitude.
 - **Operational Analytics**: Automatic calculation of "Dumping Cycles" based on PTO status.
+
+## 📸 Dashboard Preview
+
+![Fleet Mission Control Preview](preview.png)
 
 ## 📊 Data Format (JSONL)
 

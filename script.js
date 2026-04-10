@@ -138,6 +138,7 @@ function processFleetData(fileResults) {
                     unitId = j.source || unitId;
                     unitType = j.record_type === 'dt' ? 'DUMP TRUCK' : 'EXCAVATOR';
                     const ts = new Date(j.timestamp).getTime();
+                    // TEST EDIT
                     
                     if (ts < globalMin) globalMin = ts;
                     if (ts > globalMax) globalMax = ts;
@@ -203,6 +204,7 @@ function processFleetData(fileResults) {
 
     updateLoader(60, "INITIALIZING FLEET VISUALS...");
     renderFleetList();
+    calculateFleetStats();
     
     // Choose first unit as active
     activeUnitId = Object.keys(fleet)[0];
@@ -217,6 +219,20 @@ function processFleetData(fileResults) {
     setTimeout(() => elements.loading.classList.add('hidden'), 800);
     
     updateStateByTime(missionTime.start);
+}
+
+function calculateFleetStats() {
+    const ids = Object.keys(fleet);
+    const activeUnitsEl = document.getElementById('stat-active-units');
+    const totalDumpingEl = document.getElementById('stat-total-dumping');
+    
+    if (activeUnitsEl) activeUnitsEl.textContent = ids.length;
+    
+    let totalDumps = 0;
+    ids.forEach(id => {
+        totalDumps += fleet[id].totalDumping || 0;
+    });
+    if (totalDumpingEl) totalDumpingEl.textContent = totalDumps;
 }
 
 function getUnitColor(id) {
@@ -309,6 +325,8 @@ function updateStateByTime(ts) {
 }
 
 function updateHUD(d) {
+    if (!d) return;
+    
     elements.sats.innerText = d.sats;
     elements.temp.innerText = d.temp + "°C";
     elements.tempFill.style.width = Math.min((d.temp - 20) / 60 * 100, 100) + "%";
@@ -324,17 +342,23 @@ function updateHUD(d) {
     // Dynamic Color Calculation
     let color = 'var(--cyan-primary)';
     if (d.speed > 30) color = 'var(--rose-crit)';
-    else if (d.speed > 15) color = 'var(--amber-warn)';
+    else if (d.speed > 20) color = 'var(--amber-warn)';
     
     elements.speedRing.style.stroke = color;
-    elements.speedRing.style.filter = `drop-shadow(0 0 6px ${color})`;
+    elements.speedRing.style.filter = `drop-shadow(0 0 8px ${color})`;
     
-    const moveX = (d.gx / 1000) * 50;
-    const moveY = (d.gy / 1000) * 50;
-    elements.horizonPoint.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
-    elements.gx.innerText = d.gx;
-    elements.gy.innerText = d.gy;
-    elements.gz.innerText = d.gz;
+    // Artificial Horizon Rotation (using G-sensor Z/Y for Pitch/Roll)
+    const horizon = document.getElementById('horizon');
+    if (horizon) {
+        // Multiplier adjusted for visual tilt sensitivity
+        const pitch = d.gz * 20; 
+        const roll = d.gy * 20;
+        horizon.style.transform = `rotate(${roll}deg)`;
+        const horizonFill = horizon.querySelector('.horizon-fill');
+        if (horizonFill) {
+            horizonFill.style.transform = `translateY(${pitch}px)`;
+        }
+    }
     
     if (d.acc) elements.indAcc.classList.add('active'); else elements.indAcc.classList.remove('active');
     if (d.pto) elements.indPto.classList.add('active'); else elements.indPto.classList.remove('active');
@@ -347,6 +371,18 @@ function updateHUD(d) {
         elements.indOperator.innerText = (d.ibutton.status || "OFFLINE").toUpperCase();
         elements.indOperator.className = "op-status-pill " + (d.ibutton.status === 'login' ? 'logged-in' : (d.ibutton.status === 'logout' ? 'logged-out' : ''));
     }
+
+    // Ripple effect on marker
+    Object.keys(fleet).forEach(id => {
+        const unit = fleet[id];
+        if (unit.marker) {
+            const el = unit.marker.getElement();
+            if (el) {
+                if (id === activeUnitId) el.classList.add('marker-focused');
+                else el.classList.remove('marker-focused');
+            }
+        }
+    });
 
     checkEventLog(d);
 }
@@ -438,27 +474,27 @@ function initChart() {
 
 function checkEventLog(d) {
     if (d.acc !== lastLogStatus.acc) {
-        addLogEntry(`${activeUnitId}: IGNITION ${d.acc ? 'ON' : 'OFF'}`, d.acc ? 'info' : 'warn', d.timeStr);
+        addLogEntry(`${activeUnitId}: IGNITION ${d.acc ? 'ON' : 'OFF'}`, d.acc ? 'info' : 'warn', d.timeStr, d.ts);
         lastLogStatus.acc = d.acc;
     }
     if (d.pto !== lastLogStatus.pto) {
-        addLogEntry(`${activeUnitId}: DUMPING ${d.pto ? 'START' : 'END'}`, d.pto ? 'info' : 'warn', d.timeStr);
+        addLogEntry(`${activeUnitId}: DUMPING ${d.pto ? 'START' : 'END'}`, d.pto ? 'info' : 'warn', d.timeStr, d.ts);
         lastLogStatus.pto = d.pto;
     }
     if (d.beacon !== lastLogStatus.beacon) {
         if (d.beacon) {
-            addLogEntry(`${activeUnitId}: BEACON DETECTED [${d.beaconData.mac}]`, 'info', d.timeStr);
+            addLogEntry(`${activeUnitId}: BEACON DETECTED [${d.beaconData.mac}]`, 'info', d.timeStr, d.ts);
         } else {
-            addLogEntry(`${activeUnitId}: BEACON LOST`, 'warn', d.timeStr);
+            addLogEntry(`${activeUnitId}: BEACON LOST`, 'warn', d.timeStr, d.ts);
         }
         lastLogStatus.beacon = d.beacon;
     }
     // iButton Log
     if (d.ibutton.status !== lastLogStatus.ibuttonStatus) {
         if (d.ibutton.status === 'login') {
-            addLogEntry(`${activeUnitId}: OPERATOR [${d.ibutton.id}] LOGGED IN`, 'info', d.timeStr);
+            addLogEntry(`${activeUnitId}: OPERATOR [${d.ibutton.id}] LOGGED IN`, 'info', d.timeStr, d.ts);
         } else if (d.ibutton.status === 'logout') {
-            addLogEntry(`${activeUnitId}: OPERATOR [${d.ibutton.id}] LOGGED OUT`, 'warn', d.timeStr);
+            addLogEntry(`${activeUnitId}: OPERATOR [${d.ibutton.id}] LOGGED OUT`, 'warn', d.timeStr, d.ts);
         }
         lastLogStatus.ibuttonStatus = d.ibutton.status;
     }
@@ -466,12 +502,25 @@ function checkEventLog(d) {
 
 let lastLogStatus = { acc: null, pto: null, beacon: null, ibuttonStatus: null };
 
-function addLogEntry(msg, type, time) {
+function addLogEntry(msg, type, time, timestamp) {
     const entry = document.createElement('div');
     entry.className = `log-entry ${type}`;
     entry.innerHTML = `<div class="time">${time}</div><div class="msg">${msg}</div>`;
+    
+    // Time Travel
+    if (timestamp) {
+        entry.onclick = () => {
+            missionTime.current = timestamp;
+            updateStateByTime(timestamp);
+            isLocked = true;
+            elements.btnLock.classList.add('active');
+            elements.lockIconOn.style.display = 'block';
+            elements.lockIconOff.style.display = 'none';
+        };
+    }
+
     elements.eventLog.prepend(entry);
-    if (elements.eventLog.children.length > 20) elements.eventLog.lastChild.remove();
+    if (elements.eventLog.children.length > 50) elements.eventLog.lastChild.remove();
 }
 
 // --- Player Logic ---

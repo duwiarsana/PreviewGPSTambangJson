@@ -35,6 +35,19 @@
                     <div class="empty-fleet-hint">LOAD DATA SHIPS TO BEGIN...</div>
                 </div>
             </div>
+            <div class="panel-divider"></div>
+
+            <div class="panel-subtitle" style="padding: 0 1rem 0.5rem 1rem;">FLEET OVERVIEW</div>
+            <div class="fleet-stats-grid">
+                <div class="stat-mini-card">
+                    <span class="stat-mini-label">ACTIVE UNITS</span>
+                    <span class="stat-mini-val" id="stat-active-units">0</span>
+                </div>
+                <div class="stat-mini-card">
+                    <span class="stat-mini-label">TOTAL DUMPING</span>
+                    <span class="stat-mini-val" id="stat-total-dumping">0</span>
+                </div>
+            </div>
 
             <div class="panel-divider"></div>
 
@@ -100,7 +113,10 @@
                 <span class="panel-subtitle">G-SENSOR FIELD</span>
                 <div class="horizon-container">
                     <div class="artificial-horizon" id="horizon">
-                        <div class="horizon-ring"></div>
+                        <div class="horizon-ring">
+                            <div class="horizon-line"></div>
+                            <div class="horizon-fill"></div>
+                        </div>
                         <div class="horizon-point" id="gsensor-point"></div>
                     </div>
                     <div class="g-axis-labels">
