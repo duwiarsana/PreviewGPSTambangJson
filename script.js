@@ -359,6 +359,11 @@ function updateHUD(d) {
             horizonFill.style.transform = `translateY(${pitch}px)`;
         }
     }
+
+    // Numeric G-Sensor Updates
+    if (elements.gx) elements.gx.innerText = d.gx;
+    if (elements.gy) elements.gy.innerText = d.gy;
+    if (elements.gz) elements.gz.innerText = d.gz;
     
     if (d.acc) elements.indAcc.classList.add('active'); else elements.indAcc.classList.remove('active');
     if (d.pto) elements.indPto.classList.add('active'); else elements.indPto.classList.remove('active');
