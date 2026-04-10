@@ -366,37 +366,57 @@ body {
 }
 
 .horizon-fill {
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    top: 50%;
-    left: -50%;
-    background: linear-gradient(to bottom, #22d3ee 50%, #713f12 50%);
-    opacity: 0.4;
+    display: none;
 }
 
 .horizon-line {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: 2px;
-    background: #fff;
-    box-shadow: 0 0 10px rgba(255,255,255,0.5);
-    z-index: 5;
+    display: none;
 }
 
 .horizon-point {
-    width: 10px;
-    height: 10px;
-    background: var(--rose-crit);
+    width: 14px;
+    height: 14px;
+    background: #fff;
     border-radius: 50%;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 15px var(--rose-crit);
+    transform: translate(-50%, -50%); /* Base centering, JS handles offset */
+    box-shadow: 0 0 20px #fff, 0 0 40px var(--cyan-primary);
     z-index: 10;
+    transition: transform 0.1s ease-out;
 }
+
+/* G-Meter Grid Lines */
+.artificial-horizon::before, 
+.artificial-horizon::after {
+    content: '';
+    position: absolute;
+    background: var(--panel-border);
+}
+
+.artificial-horizon::before {
+    top: 50%; left: 0; width: 100%; height: 1px;
+}
+
+.artificial-horizon::after {
+    left: 50%; top: 0; width: 1px; height: 100%;
+}
+
+.horizon-ring::before,
+.horizon-ring::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--panel-border);
+    border-radius: 50%;
+}
+
+.horizon-ring::before { width: 46px; height: 46px; border-style: dashed; }
+.horizon-ring::after { width: 92px; height: 92px; border-style: dashed; }
+
 
 .g-axis-labels {
     display: flex;

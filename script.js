@@ -360,17 +360,20 @@ function updateHUD(d) {
     elements.speedRing.style.stroke = color;
     elements.speedRing.style.filter = `drop-shadow(0 0 8px ${color})`;
     
-    // Artificial Horizon Rotation (using G-sensor Z/Y for Pitch/Roll)
-    const horizon = document.getElementById('horizon');
-    if (horizon) {
-        // Multiplier adjusted for visual tilt sensitivity
-        const pitch = d.gz * 20; 
-        const roll = d.gy * 20;
-        horizon.style.transform = `rotate(${roll}deg)`;
-        const horizonFill = horizon.querySelector('.horizon-fill');
-        if (horizonFill) {
-            horizonFill.style.transform = `translateY(${pitch}px)`;
-        }
+    // G-Ball Animation (moving ball based on lateral/longitudinal forces)
+    if (elements.horizonPoint) {
+        // Assume 1000 = ~1G. Scale to ~50px max offset for the 70px radius container
+        const sens = 0.05; 
+        const moveX = d.gx * sens;
+        const moveY = d.gy * sens;
+        
+        // Apply clamping to keep ball inside the grid (60px limit)
+        const limit = 60;
+        const clampedX = Math.max(-limit, Math.min(limit, moveX));
+        const clampedY = Math.max(-limit, Math.min(limit, moveY));
+        
+        // Update ball position
+        elements.horizonPoint.style.transform = `translate(calc(-50% + ${clampedX}px), calc(-50% + ${clampedY}px))`;
     }
 
     // Numeric G-Sensor Updates
