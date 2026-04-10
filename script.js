@@ -40,7 +40,8 @@ const elements = {
     dumpCount: document.getElementById('val-dump-count'),
     indBeacon: document.getElementById('ind-beacon'),
     fleetList: document.getElementById('fleet-unit-list'),
-    missionId: document.querySelector('.mission-id'),
+    missionId: document.getElementById('mission-id'),
+    missionTag: document.querySelector('.mission-tag'),
     operatorId: document.getElementById('val-operator'),
     indOperator: document.getElementById('ind-operator'),
     btnLock: document.getElementById('btn-lock'),
@@ -221,13 +222,11 @@ function processFleetData(fileResults) {
     // Refresh Map/Chart
     if (map) map.remove();
     initMap();
-    if (telemetryChart) telemetryChart.destroy();
-    initChart();
     
     updateLoader(100, "FLEET COMMAND ACTIVE");
     setTimeout(() => elements.loading.classList.add('hidden'), 800);
     
-    updateStateByTime(missionTime.start);
+    selectUnit(activeUnitId);
 }
 
 function calculateFleetStats() {
@@ -270,8 +269,13 @@ function renderFleetList() {
 
 function selectUnit(id) {
     activeUnitId = id;
+    const unit = fleet[id];
+    
     renderFleetList();
-    elements.missionId.innerHTML = `${id} <small>// MISSION FOCUS</small>`;
+    
+    if (elements.missionId) elements.missionId.innerText = id;
+    if (elements.missionTag) elements.missionTag.innerText = `// ${unit.type}`;
+    
     if (telemetryChart) telemetryChart.destroy();
     initChart();
     updateStateByTime(missionTime.current);
