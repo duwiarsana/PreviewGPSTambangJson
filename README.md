@@ -6,14 +6,15 @@ A high-performance, web-based fleet monitoring dashboard designed for mining ope
 
 - **Fleet Intelligence**:
   - **Fleet Overview HUD**: Real-time stats on active units and cumulative dumping cycles across the entire fleet.
-  - **Interactive Event Logs (Time Travel)**: Click any event in the session log to automatically synchronize the dashboard and map focus to that specific moment in time.
+  - **Interactive Event Logs (Time Travel)**: Click any event in the session log to automatically synchronize the dashboard and map focus.
+  - **UTC Temporal Alignment**: Forced UTC rendering for 100% time accuracy across all modules.
 - **Advanced Visualization**:
-  - **Artificial Horizon**: Dynamic attitude indicator visualizing vehicle tilt (pitch/roll) using G-sensor telemetry.
-  - **Marker Pulse Effect**: Visual feedback for the active vehicle on the map.
+  - **G-Sensor G-Ball**: High-precision "bubble level" style indicator for lateral (X) and longitudinal (Y) force visualization.
+  - **Sliding Telemetry Stream**: Dynamic data monitor with a sliding viewing window and dual-axis visualization (Speed + Altitude).
   - **Dynamic Speedometer**: Gauges scaled to 40 km/h with high-visibility color transitions (Safe/Warn/Crit).
 - **Map Focus Control**:
   - **Lock Map Mode**: Automatically follows the active vehicle.
-  - **Vehicle Annotations**: Permanent on-map labels showing Unit ID and current Altitude.
+  - **Interactive Markers**: Color-coded markers with altitude labels and pulse effects for the active unit.
 - **Operational Analytics**: Automatic calculation of "Dumping Cycles" based on PTO status.
 
 ## 📸 Dashboard Preview
