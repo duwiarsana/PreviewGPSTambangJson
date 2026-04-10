@@ -308,6 +308,19 @@ function updateStateByTime(ts) {
 
         const point = data[bestIdx];
         
+        // Update Chart Window for Focused Unit
+        if (unit.id === activeUnitId && telemetryChart) {
+            const windowSize = 40; // Total points to show
+            const startIdx = Math.max(0, bestIdx - windowSize / 2);
+            const endIdx = Math.min(data.length, startIdx + windowSize);
+            const slice = data.slice(startIdx, endIdx);
+            
+            telemetryChart.data.labels = slice.map(d => d.timeStr);
+            telemetryChart.data.datasets[0].data = slice.map(d => d.speed);
+            telemetryChart.data.datasets[1].data = slice.map(d => d.alt);
+            telemetryChart.update('none'); // Update without full re-render for speed
+        }
+        
         // Update Marker
         if (unit.marker) {
             unit.marker.setLatLng([point.lat, point.lng]);
@@ -459,36 +472,84 @@ function initMap() {
 function initChart() {
     const ctx = document.getElementById('telemetryChart').getContext('2d');
     const unit = fleet[activeUnitId];
-    const unitData = unit.data;
-    
-    const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-    gradient.addColorStop(0, `${unit.color}66`); // 40% opacity
-    gradient.addColorStop(1, `${unit.color}00`);
+    if (!unit) return;
+
+    // Gradient for Speed
+    const gradSpeed = ctx.createLinearGradient(0, 0, 0, 200);
+    gradSpeed.addColorStop(0, `${unit.color}44`);
+    gradSpeed.addColorStop(1, `${unit.color}00`);
 
     telemetryChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: unitData.map((_, i) => i),
-            datasets: [{
-                label: 'Velocity',
-                data: unitData.map(d => d.speed),
-                borderColor: unit.color,
-                borderWidth: 2,
-                fill: true,
-                backgroundColor: gradient,
-                pointRadius: 0,
-                tension: 0.4
-            }]
+            labels: [],
+            datasets: [
+                {
+                    label: 'Speed (km/h)',
+                    data: [],
+                    borderColor: unit.color,
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: gradSpeed,
+                    pointRadius: 0,
+                    tension: 0.4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Altitude (m)',
+                    data: [],
+                    borderColor: '#818cf8', // Indigo for altitude
+                    borderWidth: 1.5,
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0,
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            animation: false, // Performance
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleFont: { family: 'Space Mono' },
+                    bodyFont: { family: 'Space Mono' }
+                }
+            },
             scales: {
-                x: { display: false },
+                x: { 
+                    display: true,
+                    grid: { display: false },
+                    ticks: { 
+                        display: true, 
+                        color: '#475569', 
+                        font: { size: 8 },
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 4
+                    }
+                },
                 y: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#475569', font: { family: 'Space Mono', size: 10 } }
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    grid: { color: 'rgba(255,255,255,0.03)' },
+                    ticks: { color: unit.color, font: { family: 'Space Mono', size: 9 } },
+                    title: { display: true, text: 'SPEED', color: unit.color, font: { size: 8 } }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: '#818cf8', font: { family: 'Space Mono', size: 9 } },
+                    title: { display: true, text: 'ALT (M)', color: '#818cf8', font: { size: 8 } }
                 }
             }
         }
