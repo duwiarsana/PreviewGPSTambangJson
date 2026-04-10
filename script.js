@@ -52,12 +52,22 @@ const elements = {
 
 function formatTime(timestamp) {
     const d = new Date(timestamp);
-    return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return d.toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        timeZone: 'UTC' 
+    });
 }
 
 function formatDate(timestamp) {
     const d = new Date(timestamp);
-    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+    return d.toLocaleDateString('en-GB', { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric',
+        timeZone: 'UTC'
+    }).toUpperCase();
 }
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -138,7 +148,6 @@ function processFleetData(fileResults) {
                     unitId = j.source || unitId;
                     unitType = j.record_type === 'dt' ? 'DUMP TRUCK' : 'EXCAVATOR';
                     const ts = new Date(j.timestamp).getTime();
-                    // TEST EDIT
                     
                     if (ts < globalMin) globalMin = ts;
                     if (ts > globalMax) globalMax = ts;
