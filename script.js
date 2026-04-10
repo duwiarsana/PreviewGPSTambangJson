@@ -98,7 +98,7 @@ async function initApp() {
         if (!response.ok) throw new Error("Local fetch failed (CORS or Missing Files)");
         
         const text = await response.text();
-        processData(text);
+        processFleetData([{ name: 'auto-load.jsonl', content: text }]);
     } catch (err) {
         console.warn("Auto-load failed. Waiting for manual upload.", err);
         elements.loading.classList.add('manual-mode');
